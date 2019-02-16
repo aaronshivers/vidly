@@ -1,88 +1,75 @@
 const express = require('express')
 const router = express.Router()
-
+const { Genre } = require('../models/genres')
 const { validateGenre } = require('../utils/validate-genre')
-
-const genres = [
-  { id: 1, name: 'action' },
-  { id: 2, name: 'horror' }
-]
 
 // GET /
 router.get('/', (req, res) => {
-  res.send(genres)
+  Genre.find().then(data => res.send(data))
 })
 
 // POST /
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { name } = req.body
 
   // Validate New Genre
   const { error } = validateGenre({ name })
   if (error) return res.status(400).send(error.details[0].message)
-  
-  // Create new genre and add it to the genres array
-  const genre = {
-    id: genres.length + 1,
-    name
-  }
-  genres.push(genre)
 
-  // return new genre
-  res.send(genre)
+  try {
+    const genre = await new Genre({ name })
+    await genre.save()
+    res.send(genre)
+  } catch (error) {
+    res.send(error.message)
+  }
 })
 
 // GET /:id
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params
 
-  // Find genre by id
-  const genre = genres.find(genre => genre.id === parseInt(id))
-  if (!genre) return res.status(404).send('We could not find that genre')
-
-  // Return genre
-  res.send(genre)
+  try {
+    const genre = await Genre.findById(id)
+    if (!genre) return res.status(404).send('We could not find that genre')
+    res.send(genre)
+  } catch (error) {
+    res.send(error.message)
+  }
 })
 
 // PATCH /:id
-router.patch('/:id', (req, res) => {
+router.patch('/:id', async (req, res) => {
   const { id } = req.params
   const { name } = req.body
-
-  // Find genre by id
-  const genre = genres.find(genre => genre.id === parseInt(id))
-  if (!genre) return res.status(404).send('We could not find that genre')
 
   // Validate New Genre
   const { error } = validateGenre({ name })
   if (error) return res.status(400).send(error.details[0].message)
 
-  // Find index of genre
-  const index = genres.indexOf(genre)
+  const update = { name }
+  const options = { runValidators: true, new: true }
 
-  // Update the genre
-  genre.name = name
-
-  // Return genre
-  res.send(genre)
+  try {
+    const genre = await Genre.findByIdAndUpdate(id, update, options)
+    if (!genre) return res.status(404).send('We could not find that genre')
+    res.send(genre)
+  } catch (error) {
+    res.send(error.message)
+  }
 })
 
 // DELETE /:id
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const { id } = req.params
 
-  // Find genre by id
-  const genre = genres.find(genre => genre.id === parseInt(id))
-  if (!genre) return res.status(404).send('We could not find that genre')
-
-  // Find index of genre
-  const index = genres.indexOf(genre)
-
-  // delete the genre
-  genres.splice(index, 1)
-
-  // Return delted genre
-  res.send(genre)
+  try {
+    const genre = await Genre.findByIdAndDelete(id)
+    if (!genre) return res.status(404).send('We could not find that genre')
+    res.send(genre)
+  } catch (error) {
+    res.send(error.message)
+  }
 })
 
 module.exports = router
