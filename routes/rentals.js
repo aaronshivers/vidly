@@ -6,6 +6,7 @@ const { Rental } = require('../models/rentals')
 const { Customer } = require('../models/customers')
 const { Movie } = require('../models/movies')
 const { validateRental } = require('../utils/validate-rental')
+const { auth } = require('../middleware/auth')
 
 Fawn.init(mongoose)
 
@@ -20,7 +21,7 @@ router.get('/', async (req, res) => {
 })
 
 // POST /
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const { movieId, customerId } = req.body
 
   // Validate New Rental

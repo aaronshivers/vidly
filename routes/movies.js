@@ -3,6 +3,7 @@ const router = express.Router()
 const { Movie } = require('../models/movies')
 const { Genre } = require('../models/genres')
 const { validateMovie } = require('../utils/validate-movie')
+const { auth } = require('../middleware/auth')
 
 // GET /
 router.get('/', async (req, res) => {
@@ -15,7 +16,7 @@ router.get('/', async (req, res) => {
 })
 
 // POST /
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const { title, genreId, numberInStock, dailyRentalRate } = req.body
 
   // Validate New Movie
@@ -61,7 +62,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // PATCH /:id
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
   const { id } = req.params
   const { title, genreId, numberInStock, dailyRentalRate } = req.body
   const updatedMovie = { title, genreId, numberInStock, dailyRentalRate }
@@ -87,7 +88,7 @@ router.patch('/:id', async (req, res) => {
 })
 
 // DELETE /:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   const { id } = req.params
 
   try {

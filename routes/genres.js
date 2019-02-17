@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const { Genre } = require('../models/genres')
 const { validateGenre } = require('../utils/validate-genre')
+const { auth } = require('../middleware/auth')
+const { admin } = require('../middleware/admin')
 
 // GET /
 router.get('/', (req, res) => {
@@ -9,7 +11,7 @@ router.get('/', (req, res) => {
 })
 
 // POST /
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const { name } = req.body
 
   // Validate New Genre
@@ -39,7 +41,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // PATCH /:id
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
   const { id } = req.params
   const { name } = req.body
 
@@ -60,7 +62,7 @@ router.patch('/:id', async (req, res) => {
 })
 
 // DELETE /:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [auth, admin], async (req, res) => {
   const { id } = req.params
 
   try {

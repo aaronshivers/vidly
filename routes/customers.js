@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { Customer } = require('../models/customers')
 const { validateCustomer } = require('../utils/validate-customer')
+const { auth } = require('../middleware/auth')
 
 // GET /
 router.get('/', (req, res) => {
@@ -9,7 +10,7 @@ router.get('/', (req, res) => {
 })
 
 // POST /
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const { name, phone, isGold } = req.body
   const newCustomer = { name, phone, isGold }
 
@@ -40,7 +41,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // PATCH /:id
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
   const { id } = req.params
   const { name, phone, isGold } = req.body
   const updatedCustomer = { name, phone, isGold }
@@ -62,7 +63,7 @@ router.patch('/:id', async (req, res) => {
 })
 
 // DELETE /:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   const { id } = req.params
 
   try {
