@@ -9,7 +9,7 @@ const movieSchema = new Schema({
     required: true,
     trim: true,
     minlength: 5,
-    maxlength: 255,
+    maxlength: 255
   },
   genre: {
     type: genreSchema,
