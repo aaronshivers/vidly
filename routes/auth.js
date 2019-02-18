@@ -13,25 +13,19 @@ router.post('/', async (req, res) => {
   const { error } = validateAuth({ email, password })
   if (error) return res.status(400).send(error.details[0].message)
 
-  try {
+  // check db for existing user
+  const user = await User.findOne({ email })
+  if (!user) return res.status(400).send('Invalid Email or Password.')
 
-    // check db for existing user
-    const user = await User.findOne({ email })
-    if (!user) return res.status(400).send('Invalid Email or Password.')
+  // Validate Password
+  const validPass = bcrypt.compare(password, user.password)
+  if (!validPass) return res.status(400).send('Invalid Email or Password.')
 
-    // Validate Password
-    const validPass = bcrypt.compare(password, user.password)
-    if (!validPass) return res.status(400).send('Invalid Email or Password.')
+  // Get auth token
+  const token = await user.createAuthToken()
 
-    // Get auth token
-    const token = await user.createAuthToken()
-
-    // set header and return user info
-    res.header('x-auth-token', token).send(token)
-
-  } catch (error) {
-    res.send(error.message)
-  }
+  // set header and return user info
+  res.header('x-auth-token', token).send(token)
 })
 
 module.exports = router

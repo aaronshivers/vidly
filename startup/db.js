@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const winston = require('winston')
 
 const { MONGO_USER, MONGO_PASS, MONGO_SERVER, MONGO_DATABASE } = process.env
 const encodedpass = encodeURIComponent(MONGO_PASS)
@@ -11,7 +12,6 @@ mongoose.set('autoIndex', false)
 mongoose.set('toObject', { getters: true })
  
 mongoose.connect(url)
-  .then(() => console.log('Connected to Database'))
-  .catch(err => console.error('Could not connect to database', err))
+  .then(() => winston.info('Connected to Database'))
 
-module.exports = { mongoose }
+module.exports = { mongoose, url }
