@@ -4,6 +4,7 @@ const { Genre } = require('../models/genres')
 const { validateGenre } = require('../utils/validate-genre')
 const { auth } = require('../middleware/auth')
 const { admin } = require('../middleware/admin')
+const validateObjectId = require('../middleware/validateObjectId')
 
 // GET /
 router.get('/', async (req, res) => {
@@ -28,7 +29,7 @@ router.post('/', auth, async (req, res) => {
 })
 
 // GET /:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectId, async (req, res) => {
   const { id } = req.params
 
   // find genre by id
