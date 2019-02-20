@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "export NODE_ENV=development && node app.js",
-    "test": "export NODE_ENV=test && jest --watchAll --verbose"
+    "test": "export NODE_ENV=test && mocha -t 50000 tests/**/*.test.js",
+    "test-watch": "nodemon --exec \"npm test\""
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,9 @@
     "winston-mongodb": "^4.0.3"
   },
   "devDependencies": {
+    "expect": "^24.1.0",
     "jest": "^24.1.0",
+    "mocha": "^6.0.0",
     "supertest": "^3.4.2"
   }
 }

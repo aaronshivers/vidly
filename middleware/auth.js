@@ -7,8 +7,7 @@ const auth = async (req, res, next) => {
   if (!token) return res.status(401).send('Access Denied! No token provided.')
   
   try {
-    const decoded = await jwt.verify(token, secret)
-    req.user = await User.findById(decoded._id)
+    req.user = await jwt.verify(token, secret)
     next()
   } catch (error) {
     res.status(400).send('Invalid Token')
