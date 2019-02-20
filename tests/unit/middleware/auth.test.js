@@ -5,7 +5,6 @@ const { ObjectId } = require('mongodb')
 describe('auth middleware', () => {
   it('should populate req.user with the valid JWT', () => {
     const user = { _id: new ObjectId(), isAdmin: true }
-    console.log(user)
     const token = new User(user).createAuthToken()
     const req = {
       header: jest.fn().mockReturnValue(token)

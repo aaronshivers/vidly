@@ -96,9 +96,7 @@ describe('/api/genres', () => {
         .set('x-auth-token', token)
         .send(genre)
         .expect(200)
-        .end(async (err, res) => {
-          if (err) return done(err.message)
-
+        .end(async res => {
           const foundGenre = await Genre.find(genre)
           expect(foundGenre).not.toBeNull()
           done()
@@ -114,11 +112,97 @@ describe('/api/genres', () => {
         .set('x-auth-token', token)
         .send(genre)
         .expect(200)
-        .end(async (err, res) => {
-          if (err) return done(err.message)
-
+        .expect(res => {
           expect(res.body).toHaveProperty('_id')
           expect(res.body).toHaveProperty('name', 'genre1')
+        })
+        .end(done)
+    })
+  })
+
+  describe('PATCH /:id', () => {
+
+    it('should return 401 if client is not logged in', done => {
+      request(server)
+        .post('/api/genres')
+        .send({ name: 'genre' })
+        .expect(401)
+        .end(done)
+    })
+
+    it('should return 400 if the update data is invalid', done => {
+      const { _id } = genres[0]
+      const token = new User().createAuthToken()
+      const update = { name: 1234 }
+
+      request(server)
+        .patch(`/api/genres/${ _id }`)
+        .set('x-auth-token', token)
+        .send(update)
+        .expect(400)
+        .end(done)
+    })
+
+    it('should update the genre', done => {
+      const { _id } = genres[0]
+      const token = new User().createAuthToken()
+
+      request(server)
+        .patch(`/api/genres/${ _id }`)
+        .set('x-auth-token', token)
+        .send({ name: 'updated genre'})
+        .expect(200)
+        .end(async res => {
+          const genre = await Genre.findById({ _id })
+          expect(genre.name).toEqual('updated genre')
+          done()
+        })
+    })
+  })
+
+  describe('DELETE /:id', () => {
+
+    it('should return 401 if user is not logged in', done => {
+      const { _id } = genres[0]
+
+      request(server)
+        .delete(`/api/genres/${ _id }`)
+        .expect(401)
+        .end(async res => {
+          const genres = await Genre.find().then
+          expect(genres.length).toBe(2)
+          done()
+        })
+    })
+
+    it('should return 403 if user is not admin', done => {
+      const { _id } = genres[0]
+      const user = { _id: new ObjectId(), isAdmin: false }
+      const token = new User(user).createAuthToken()
+
+      request(server)
+        .delete(`/api/genres/${ _id }`)
+        .set('x-auth-token', token)
+        .expect(403)
+        .end(async res => {
+          const genres = await Genre.find()
+          expect(genres.length).toBe(2)
+          done()
+        })
+    })
+
+    it('should delete the specified genre', done => {
+      const { _id } = genres[0]
+      const user = { _id: new ObjectId(), isAdmin: true }
+      const token = new User(user).createAuthToken()
+
+      request(server)
+        .delete(`/api/genres/${ _id }`)
+        .set('x-auth-token', token)
+        .expect(200)
+        .end(async res => {
+          const genre = await Genre.findById({ _id })
+          expect(genre).toBeFalsy()
           done()
         })
     })
