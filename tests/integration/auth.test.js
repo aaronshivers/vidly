@@ -1,9 +1,9 @@
 const request = require('supertest')
-const { server } = require('../../app')
 const { User } = require('../../models/users')
 const { Genre } = require('../../models/genres')
 
 describe('auth middleware', () => {
+  let server
 
   const exec = () => {
     return request(server)
@@ -13,10 +13,12 @@ describe('auth middleware', () => {
   }
 
   beforeEach(() => {
+    server = require('../../app')
     token = new User().createAuthToken()
   })
   
   afterEach(async () => {
+    await server.close()
     await Genre.deleteMany()
   })
 

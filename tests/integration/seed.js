@@ -2,10 +2,10 @@ const { ObjectId } = require('mongodb')
 const { Genre } = require(`../../models/genres`)
 
 const genres = [{
-  _id: new ObjectId(),
+  _id: new ObjectId().toString(),
   name: 'genre1'
 }, {
-  _id: new ObjectId(),
+  _id: new ObjectId().toString(),
   name: 'genre2'
 }]
 
