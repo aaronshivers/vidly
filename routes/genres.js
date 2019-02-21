@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const { Genre } = require('../models/genres')
-const { validateGenre } = require('../utils/validate-genre')
+const validateGenre = require('../utils/validate-genre')
 const { auth } = require('../middleware/auth')
 const { admin } = require('../middleware/admin')
 const validateObjectId = require('../middleware/validateObjectId')
+const validate = require('../middleware/validate')
 
 // GET /
 router.get('/', async (req, res) => {
@@ -13,13 +14,9 @@ router.get('/', async (req, res) => {
 })
 
 // POST /
-router.post('/', auth, async (req, res) => {
+router.post('/', [auth, validate(validateGenre)], async (req, res) => {
   const { name } = req.body
 
-  // Validate New Genre
-  const { error } = validateGenre({ name })
-  if (error) return res.status(400).send(error.details[0].message)
-  
   // create new genre and save
   const genre = await new Genre({ name })
   await genre.save()
@@ -41,13 +38,9 @@ router.get('/:id', validateObjectId, async (req, res) => {
 })
 
 // PATCH /:id
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id', [auth, validate(validateGenre)], async (req, res) => {
   const { id } = req.params
   const { name } = req.body
-
-  // validate the update info
-  const { error } = validateGenre({ name })
-  if (error) return res.status(400).send(error.details[0].message)
 
   // update the genre
   const update = { name }

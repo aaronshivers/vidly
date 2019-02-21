@@ -7,6 +7,7 @@ const winston = require('winston')
 const { mongoose } = require('./startup/db')
 require('./startup/logging')()
 require('./startup/routes')(app)
+require('./startup/prod')(app)
 
 const port = process.env.PORT || 3000
 

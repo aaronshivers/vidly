@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const { Customer } = require('../models/customers')
-const { validateCustomer } = require('../utils/validate-customer')
+const validateCustomer = require('../utils/validate-customer')
 const { auth } = require('../middleware/auth')
+const validate = require('../middleware/validate')
 
 // GET /
 router.get('/', async (req, res) => {
@@ -11,14 +12,10 @@ router.get('/', async (req, res) => {
 })
 
 // POST /
-router.post('/', auth, async (req, res) => {
+router.post('/', [auth, validate(validateCustomer)], async (req, res) => {
   const { name, phone, isGold } = req.body
   const newCustomer = { name, phone, isGold }
 
-  // Validate New Customer
-  const { error } = validateCustomer(newCustomer)
-  if (error) return res.status(400).send(error.details[0].message)
-  
   // create and save new customer
   const customer = await new Customer(newCustomer)
   await customer.save()
@@ -40,14 +37,10 @@ router.get('/:id', async (req, res) => {
 })
 
 // PATCH /:id
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id', [auth, validate(validateCustomer)], async (req, res) => {
   const { id } = req.params
   const { name, phone, isGold } = req.body
   const updatedCustomer = { name, phone, isGold }
-
-  // validate new customer info
-  const { error } = validateCustomer(updatedCustomer)
-  if (error) return res.status(400).send(error.details[0].message)
 
   // create and save new customer
   const update = updatedCustomer

@@ -1,5 +1,4 @@
 const express = require('express')
-const helmet = require('helmet')
 
 const index = require('../routes/index')
 const genres = require('../routes/genres')
@@ -13,7 +12,6 @@ const error = require('../middleware/error')
 
 module.exports = app => {
   app.use(express.json())
-  app.use(helmet())
   app.use('/', index)
   app.use('/api/genres', genres)
   app.use('/api/customers', customers)

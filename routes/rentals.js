@@ -5,8 +5,9 @@ const mongoose = require('mongoose')
 const { Rental } = require('../models/rentals')
 const { Customer } = require('../models/customers')
 const { Movie } = require('../models/movies')
-const { validateRental } = require('../utils/validate-rental')
+const validateRental = require('../utils/validate-rental')
 const { auth } = require('../middleware/auth')
+const validate = require('../middleware/validate')
 
 Fawn.init(mongoose)
 
@@ -17,12 +18,8 @@ router.get('/', async (req, res) => {
 })
 
 // POST /
-router.post('/', auth, async (req, res) => {
+router.post('/', [auth, validate(validateRental)], async (req, res) => {
   const { movieId, customerId } = req.body
-
-  // Validate New Rental
-  const { error } = validateRental({ movieId, customerId })
-  if (error) return res.status(400).send(error.details[0].message)
 
   // Verify that movieId exists, then apply it to newRental
   const movie = await Movie.findById(movieId)

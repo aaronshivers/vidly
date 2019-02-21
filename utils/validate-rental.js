@@ -1,12 +1,10 @@
 const Joi = require('joi')
 Joi.objectId = require('joi-objectid')(Joi)
 
-const validateRental = rental => {
+module.exports = req => {
   const schema = {
     movieId: Joi.objectId().required(),
     customerId: Joi.objectId().required()
   }
-  return Joi.validate(rental, schema)
+  return Joi.validate(req, schema)
 }
-
-module.exports = { validateRental }

@@ -8,6 +8,9 @@
     "test": "export NODE_ENV=test && mocha -t 50000 tests/**/*.test.js --exit",
     "test-watch": "nodemon --exec \"npm test\""
   },
+  "engines": {
+    "node": "10.15.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aaronshivers/vidly.git"
@@ -20,6 +23,7 @@
   "homepage": "https://github.com/aaronshivers/vidly#readme",
   "dependencies": {
     "bcrypt": "^3.0.4",
+    "compression": "^1.7.3",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "express-async-errors": "^3.1.1",

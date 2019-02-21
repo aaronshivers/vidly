@@ -2,9 +2,10 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const { User } = require('../models/users')
-const { validateUser } = require('../utils/validate-user')
+const validateUser = require('../utils/validate-user')
 const { createToken } = require('../utils/create-token')
 const { auth } = require('../middleware/auth')
+const validate = require('../middleware/validate')
 
 // GET /
 router.get('/me', auth, async (req, res) => {
@@ -13,12 +14,8 @@ router.get('/me', auth, async (req, res) => {
 })
 
 // POST /
-router.post('/', async (req, res) => {
+router.post('/', validate(validateUser), async (req, res) => {
   const { name, email, password } = req.body
-
-  // Validate New User
-  const { error } = validateUser({ name, email, password })
-  if (error) return res.status(400).send(error.details[0].message)
 
   try {
 

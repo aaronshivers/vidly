@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router()
 const { Movie } = require('../models/movies')
 const { Genre } = require('../models/genres')
-const { validateMovie } = require('../utils/validate-movie')
+const validateMovie = require('../utils/validate-movie')
 const { auth } = require('../middleware/auth')
+const validate = require('../middleware/validate')
 
 // GET /
 router.get('/', async (req, res) => {
@@ -12,13 +13,8 @@ router.get('/', async (req, res) => {
 })
 
 // POST /
-router.post('/', auth, async (req, res) => {
+router.post('/', [auth, validate(validateMovie)], async (req, res) => {
   const { title, genreId, numberInStock, dailyRentalRate } = req.body
-
-  // Validate New Movie
-  const { error } = validateMovie({ title, genreId, numberInStock, dailyRentalRate })
-  if (error) return res.status(400).send(error.details[0].message)
-
 
   // Verify that genreId exists, then apply it to newMovie
   const genre = await Genre.findById(genreId)
@@ -56,14 +52,10 @@ router.get('/:id', async (req, res) => {
 })
 
 // PATCH /:id
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id', [auth, validate(validateMovie)], async (req, res) => {
   const { id } = req.params
   const { title, genreId, numberInStock, dailyRentalRate } = req.body
   const updatedMovie = { title, genreId, numberInStock, dailyRentalRate }
-
-  // Validate New Movie
-  const { error } = validateMovie(updatedMovie)
-  if (error) return res.status(400).send(error.details[0].message)
 
   // set update and options
   const update = updatedMovie
