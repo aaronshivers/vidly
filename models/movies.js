@@ -6,14 +6,14 @@ const Schema = mongoose.Schema
 const movieSchema = new Schema({
   title: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
     minlength: 5,
     maxlength: 255
   },
   genre: {
     type: genreSchema,
-    required: true
+    required: false
   },
   numberInStock: {
     type: Number,
