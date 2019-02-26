@@ -1,4 +1,4 @@
-const { User } = require('../../../models/user')
+const { User } = require('../../../models/users')
 const auth = require('../../../middleware/auth')
 const { ObjectId } = require('mongodb')
 
